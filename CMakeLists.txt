@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  visualization_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -45,12 +47,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
-
+add_message_files(
+  DIRECTORY msg
+  FILES
+  glove_segment.msg
+  glove.msg
+)
 ## Generate services in the 'srv' folder
 # add_service_files(
 #   FILES
@@ -59,18 +61,17 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
+#add_action_files(
 #   FILES
 #   Action1.action
 #   Action2.action
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
-
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  visualization_msgs)
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -101,10 +102,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES test
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -133,6 +131,13 @@ add_executable(parsing_bag_files ${PARSING_BAG_SOURCE_FILES} ${PARSING_BAG_HEADE
 target_link_libraries(parsing_bag_files ${catkin_LIBRARIES})
 ## Add cmake target dependencies of the executable/library
 add_dependencies(parsing_bag_files ${catkin_EXPORTED_TARGETS})
+
+## Declare a C++ executable
+add_executable(genmarks src/genmarks.cpp)
+## Specify libraries to link a library or executable target against
+target_link_libraries(genmarks ${catkin_LIBRARIES})
+## Add cmake target dependencies of the executable/library
+add_dependencies(genmarks ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 #############
 ## Install ##
