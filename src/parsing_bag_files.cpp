@@ -49,6 +49,8 @@ void imuTrackerCB(const geometry_msgs::PoseArrayConstPtr msg)
     // NOTE: Don't forget to play bag files with --clock option
     // also, use_sim_time should be true (rosparam set use_sim_time true)
 
+    // palm, thumb(base,tip), index(base,med,tip), mide(base,med,tip)
+    // ring(base,med,tip), pinkie(base,med,tip)
     imu_output << imu_sensor_cnt << "\t" << ros::Time::now() << ":\n";
                // IMU: 0 ~ 14 (total 15 sensors)
                for (int i = 0; i < 15; i++) {
