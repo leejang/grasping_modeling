@@ -103,6 +103,7 @@ quaternion_t quaternion_from_axis_angle (xyz_t axis, double theta) {
 	q.y = coeff * axis.y;
 	q.z = coeff * axis.z;
 
+        //std::cout << q.w << q.x << q.y << q.z << std::endl;
 	return q;
 }
 

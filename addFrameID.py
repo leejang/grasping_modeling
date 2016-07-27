@@ -33,7 +33,7 @@ else:
 with rosbag.Bag(out_bag, 'w') as outbag:
 	target_count = 0
 	other_count = 0
-	prefix = "/world"
+	prefix = "/imu_frame"
 	for topic, msg, t in rosbag.Bag(in_bag).read_messages():
 		if topic == "/tac_glove_imutracker_rel":
 			#msg.header.frame_id = prefix + str(target_count)
