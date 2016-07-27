@@ -85,7 +85,8 @@ geometry_msgs::PoseStamped quat2posest(quaternion_t q)
 	posemsg.orientation = geoqtmsg;
 	geometry_msgs::PoseStamped posestmsg;
 	posestmsg.pose = posemsg;
-	posestmsg.header.frame_id = "/base_link";
+	//posestmsg.header.frame_id = "/base_link";
+	posestmsg.header.frame_id = "/world";
 
 	return posestmsg;
 }
@@ -112,7 +113,8 @@ const float CHROMA_MAX = 1.5f;
 int marker_ids = 0;
 visualization_msgs::Marker genmarker(xyz_t posn, xyz_t scale, quaternion_t q, float chroma) {
 	visualization_msgs::Marker marker;
-	marker.header.frame_id = "/base_link";
+	//marker.header.frame_id = "/base_link";
+	marker.header.frame_id = "/world";
 	marker.header.stamp = ros::Time::now();
 	marker.ns = "genmarks_finger";
 	//marker.id = marker_ids++;
@@ -159,6 +161,9 @@ xyz_t compute_midpt(xyz_t startpt, xyz_t base_vector, quaternion_t rotation) {
 ros::Subscriber ros_sub_forcedata;
 ros::Subscriber ros_sub_genmarks_raw;
 ros::Publisher ros_pub_genmarks;
+ros::Publisher ros_pub_pose_0;
+ros::Publisher ros_pub_pose_2;
+ros::Publisher ros_pub_pose_8;
 
 // }}}
 // Timing stuff {{{
@@ -617,6 +622,20 @@ void ros_cb_raw (const geometry_msgs::PoseArray::ConstPtr& recposearray) {
 	markarray.markers[0xE] = pinkietip;
 	ros_pub_genmarks.publish(markarray);
 
+	geometry_msgs::PoseStamped glove_pose_0;
+        glove_pose_0.header.frame_id = "/world";
+        glove_pose_0.pose = recposearray->poses[0x0];
+        ros_pub_pose_0.publish(glove_pose_0);
+
+	geometry_msgs::PoseStamped glove_pose_2;
+        glove_pose_2.header.frame_id = "/world";
+        glove_pose_2.pose = recposearray->poses[0x2];
+        ros_pub_pose_2.publish(glove_pose_2);
+
+	geometry_msgs::PoseStamped glove_pose_8;
+        glove_pose_8.header.frame_id = "/world";
+        glove_pose_8.pose = recposearray->poses[0x8];
+        ros_pub_pose_8.publish(glove_pose_8);
 	// }}}
 
 	// }}}
@@ -634,8 +653,12 @@ int main(int argc, char * argv[])
 	ros::NodeHandle ros_n;
 
 	ros_sub_forcedata = ros_n.subscribe("/glove_sensors", 1000, ros_cb_forcedata);
-	ros_sub_genmarks_raw = ros_n.subscribe("/tac_glove_imutracker_raw", 1000, ros_cb_raw);
+	//ros_sub_genmarks_raw = ros_n.subscribe("/tac_glove_imutracker_raw", 1000, ros_cb_raw);
+	ros_sub_genmarks_raw = ros_n.subscribe("/tac_glove_imutracker_rel", 1000, ros_cb_raw);
 	ros_pub_genmarks = ros_n.advertise<visualization_msgs::MarkerArray>("/tac_glove_genmarks", 1000);
+        ros_pub_pose_0 = ros_n.advertise<geometry_msgs::PoseStamped>("/tac_glove_pose_0", 1000);
+        ros_pub_pose_2 = ros_n.advertise<geometry_msgs::PoseStamped>("/tac_glove_pose_2", 1000);
+        ros_pub_pose_8 = ros_n.advertise<geometry_msgs::PoseStamped>("/tac_glove_pose_8", 1000);
 
 	signal(SIGINT, INThandler);
 
